@@ -1,0 +1,11 @@
+html, body{
+  overflow-y: scroll; /* Allow vertical scrolling */
+  scrollbar-width: 0 !important; /* Optional: Make the scrollbar very thin for Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0px; /* Hide scrollbar in Chrome, Safari, Opera */
+}
+
+
