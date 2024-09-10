@@ -13,6 +13,8 @@ import {
   submitBlogs,
 } from "../Services/Services";
 
+import Logo from "../../public/KolkatEscort24.png"
+
 function Blogs() {
   const navigate = useNavigate();
   const [isBlogsOpen, setIsBlogsOpen] = useState(true);
@@ -231,7 +233,7 @@ function Blogs() {
           }}
           className="pt-3 text-xl font-bold py-[1.6rem] px-2 w-[100%] text-center bg-slate-100 rounded-xl"
         >
-          <span className="text-[#6F7EFF] pe-3">D.C.G.A.</span> Admin
+          <span className="text-[#6F7EFF] pe-3 flex justify-center items-center"><img src={Logo} alt="" className="h-[50px] w-[50px]" />KolKataEscort24 Admin</span> 
         </div>
 
         <div className="flex flex-col justify-center items-center w-[100%]">
