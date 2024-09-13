@@ -64,7 +64,7 @@ const AdminLogin = () => {
          justify-center items-center p-5 text-center h-[600px] w-[500px] gap-5"
         >
           <h2 className="font-bold text-4xl">
-            Welcome To InCallup Admin Panel !
+            Welcome To Kolkata Escort 24 Admin Panel !
           </h2>
           <p className="mb-5 text-xl">Please Enter Your Admin Credentials !</p>
           {error && (
