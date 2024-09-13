@@ -13,7 +13,7 @@ import {
   submitBlogs,
 } from "../Services/Services";
 
-import Logo from "../../public/KolkatEscort24.png"
+import Logo from "../../public/KolkatEscort24.png";
 
 function Blogs() {
   const navigate = useNavigate();
@@ -77,11 +77,10 @@ function Blogs() {
     indexOfLastBlog
   );
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  console.log(totalPages);
 
   //Getting all the location in there;
+
   useEffect(() => {
     const locationList = async () => {
       try {
@@ -233,7 +232,10 @@ function Blogs() {
           }}
           className="pt-3 text-xl font-bold py-[1.6rem] px-2 w-[100%] text-center bg-slate-100 rounded-xl"
         >
-          <span className="text-[#6F7EFF] pe-3 flex justify-center items-center"><img src={Logo} alt="" className="h-[50px] w-[50px]" />KolKataEscort24 Admin</span> 
+          <span className="text-[#6F7EFF] pe-3 flex justify-center items-center">
+            <img src={Logo} alt="" className="h-[50px] w-[50px]" />
+            KolKataEscort24 Admin
+          </span>
         </div>
 
         <div className="flex flex-col justify-center items-center w-[100%]">
@@ -472,21 +474,38 @@ function Blogs() {
                     ))
                   )}
                 </div>
+
                 {/* Pagination */}
-                <div className="h-[10vh] w-[100%] flex flex-wrap items-center justify-center">
+                <div className="container h-[fit-content] flex flex-wrap items-center justify-center gap-1 my-3">
                   <ul className="list-none flex space-x-2">
-                    {[...Array(totalPages)].map((_, index) => (
+                    {currentPage === 1 ? (
+                      ""
+                    ) : (
                       <li
-                        key={index}
-                        className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd]
-                          active:bg-[#007bff] active:text-white hover:bg-[#f0f0f0] rounded-lg ${
-                            index + 1 === currentPage ? "active" : ""
-                          }`}
-                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] text-bold bg-[#007bff]
+                      text-white hover:bg-[#f0f0f0] hover:text-black rounded-lg`}
+                        onClick={() => setCurrentPage(currentPage - 1)}
                       >
-                        {index + 1}
+                        Prev
                       </li>
-                    ))}
+                    )}
+                    <li
+                      className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] font-bold
+                      active:bg-[#007bff] active:text-white hover:bg-[#f0f0f0] rounded-lg`}
+                    >
+                      {currentPage}
+                    </li>
+                    {currentPage >= totalPages ? (
+                      ""
+                    ) : (
+                      <li
+                        className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] text-bold bg-[#007bff]
+                        text-white hover:bg-[#f0f0f0] hover:text-black rounded-lg`}
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                      >
+                        next
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
