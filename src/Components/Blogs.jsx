@@ -102,17 +102,17 @@ function Blogs() {
 
     if (name === "title") {
       console.log(value.split(" ").length);
-      if (value.split(" ").length > 50) {
-        return setTitleError("Title should not exceed 50 characters");
+      if (value.split(" ").length > 5000) {
+        return setTitleError("Title should not exceed 5000 characters");
       } else {
         setTitleError("");
       }
     }
 
     if (name === "description") {
-      if (value.split(" ").length > 200) {
+      if (value.split(" ").length > 10000) {
         return setDescriptionError(
-          "Description should not exceed 200 characters"
+          "Description should not exceed 10000 characters"
         );
       } else {
         setDescriptionError("");
