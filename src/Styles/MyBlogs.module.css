@@ -64,3 +64,54 @@
 .Btn:active {
   transform: translate(2px, 2px);
 }
+
+
+/* From Uiverse.io by andrew-demchenk0 */ 
+.Icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 2px;
+  height: 35px;
+  width: 85px;
+  border: none;
+  background: #a549da3d;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top:21px;
+}
+
+.lable {
+  line-height: 22px;
+  font-size: 19px;
+  color: #A649DA;
+  font-family: sans-serif;
+  letter-spacing: 1px;
+}
+
+.Icons:hover {
+  background: #a549da62;
+}
+
+.Icons:hover .svg-icon {
+  animation: lr 1s linear infinite;
+}
+
+@keyframes lr {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-1px);
+  }
+
+  75% {
+    transform: translateX(1px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
