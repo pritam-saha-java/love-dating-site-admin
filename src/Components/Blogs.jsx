@@ -12,7 +12,7 @@ import {
   getAllLocation,
   submitBlogs,
   getBlogsForEdit,
-  updateBlogs
+  updateBlogs,
 } from "../Services/Services";
 
 import Logo from "../../public/KolkatEscort24.png";
@@ -26,9 +26,8 @@ function Blogs() {
   const [descriptionError, setDescriptionError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [isAdsEdit, setIsAdsEdit] = useState("false");
   const [formData, setFormData] = useState({
-    blogId:"",
+    blogId: "",
     description: "",
     title: "",
     images: "",
@@ -73,7 +72,7 @@ function Blogs() {
     getBlogs();
   }, []);
 
-  const blogsPerPage = 10;
+  const blogsPerPage = 15;
 
   let indexOfLastBlog = currentPage * blogsPerPage;
   let indexofFirstBlog = indexOfLastBlog - blogsPerPage;
@@ -249,7 +248,6 @@ function Blogs() {
       const response = await getBlogsForEdit(id); // Ensure that this returns the correct response structure
       if (response) {
         setIsImgExist(response.imgUrl);
-        setIsAdsEdit(true);
         setFormData((prevState) => ({
           ...prevState, // Spread the previous form data to retain existing values
           title: response.title || "", // Provide fallback values in case of undefined data
@@ -490,7 +488,7 @@ function Blogs() {
                 {/* Blog List (Placeholder) */}
                 <div
                   className="flex flex-col flex-nowrap items-center py-2
-                gap-2 h-fit overflow-scroll w-[100%] mt-4 bg-transparent"
+                gap-2 h-fit overflow-scroll w-[100%] mt-4 bg-transparent pb-12"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {formData.bloglist ? (
