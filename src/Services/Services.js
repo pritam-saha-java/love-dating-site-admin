@@ -56,6 +56,31 @@ const getAllBlogs = async () =>{
     }
 }
 
+const getBlogsForEdit = async (id) => {
+  try{
+    const response = await axios.get(`${BASE_URL}/admin/get-blog-by-id/${id}`);
+    return response.data;
+  }catch(error){
+    console.log(error.message);
+  }
+}
+
+const updateBlogs = async (id, formData) => {
+  try{
+    const response = await axios.put(`${BASE_URL}/admin/blog/${id}/edit`,formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensures that files are handled correctly
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  }catch(error){
+    console.log("error during Edit", error.message);
+    throw error;
+  }
+};
 
 const deleteBlogs = async (id) =>{
     console.log(id);
@@ -69,4 +94,4 @@ const deleteBlogs = async (id) =>{
     }
 }
 
-export { login, getAllLocation, submitBlogs, getAllBlogs, deleteBlogs };
+export { login, getAllLocation, submitBlogs, getAllBlogs, deleteBlogs, getBlogsForEdit, updateBlogs };

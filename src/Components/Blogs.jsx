@@ -11,6 +11,8 @@ import {
   getAllBlogs,
   getAllLocation,
   submitBlogs,
+  getBlogsForEdit,
+  updateBlogs,
 } from "../Services/Services";
 
 import Logo from "../../public/KolkatEscort24.png";
@@ -23,27 +25,29 @@ function Blogs() {
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [formData, setFormData] = useState({
+    blogId: "",
     description: "",
     title: "",
     images: "",
+    locationName: "",
     locationId: "",
     locationList: [],
     bloglist: [],
     url: "",
+    isEdit: false,
   });
 
   //Checking whether the user is logged in or not
   useEffect(() => {
     const loginTime = localStorage.getItem("loginTime");
-
     if (!loginTime) {
       navigate("/");
     } else {
       // Check time expiration (e.g., 24 hours)
       const currentTime = new Date().getTime();
       const timeDiff = currentTime - loginTime;
-
       const maxSessionTime = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
       if (timeDiff > maxSessionTime) {
         localStorage.removeItem("loginTime"); // clear localStorage
@@ -68,16 +72,31 @@ function Blogs() {
     getBlogs();
   }, []);
 
-  const blogsPerPage = 10;
-  const totalPages = Math.ceil(formData?.bloglist.length / blogsPerPage) || 1;
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexofFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = formData.bloglist.slice(
-    indexofFirstBlog,
-    indexOfLastBlog
-  );
+  const blogsPerPage = 15;
 
-  console.log(totalPages);
+  let indexOfLastBlog = currentPage * blogsPerPage;
+  let indexofFirstBlog = indexOfLastBlog - blogsPerPage;
+  const blogsToDisplay =
+    filteredBlogs.length > 0 ? filteredBlogs : formData.bloglist;
+  const currentBlogs = blogsToDisplay.slice(indexofFirstBlog, indexOfLastBlog);
+  let totalPages = Math.ceil(blogsToDisplay.length / blogsPerPage) || 1;
+
+  useEffect(() => {
+    totalPages = Math.ceil(
+      (filteredBlogs.length > 0
+        ? filteredBlogs.length
+        : formData.bloglist.length) / blogsPerPage
+    );
+  }, [filteredBlogs, formData.bloglist]);
+
+  const handleFilter = (e) => {
+    e.preventDefault();
+    const { value } = e.target;
+    const filteredData = formData.bloglist.filter(
+      (item) => item.locationName === value
+    );
+    setFilteredBlogs(filteredData);
+  };
 
   //Getting all the location in there;
 
@@ -110,9 +129,9 @@ function Blogs() {
     }
 
     if (name === "description") {
-      if (value.split(" ").length > 2000) {
+      if (value.split(" ").length > 200) {
         return setDescriptionError(
-          "Description should not exceed 5000 characters"
+          "Description should not exceed 200 characters"
         );
       } else {
         setDescriptionError("");
@@ -144,20 +163,37 @@ function Blogs() {
     if (formData.images === "") {
       return setError("Choose One Image");
     }
-    const updatedForm = {
-      title: formData.title,
-      content: formData.description,
-      locationId: formData.locationId,
-      image: formData.images,
-      visitNowLink: formData.url,
-    };
-    console.log(updatedForm);
-    try {
-      const response = await submitBlogs(updatedForm);
-      console.log(response);
-      window.location.reload();
-    } catch (error) {
-      console.log("Error Occurred", error);
+
+    if (formData.isEdit) {
+      const updatedForm = {
+        title: formData.title,
+        id: formData.blogId,
+        content: formData.description,
+        locationName: formData.locationName,
+        visitNowLink: formData.url,
+      };
+      try {
+        const response = await updateBlogs(formData.blogId, updatedForm);
+        console.log(response);
+        window.location.reload();
+      } catch (error) {
+        console.log("Error Occurred", error);
+      }
+    } else {
+      const updatedForm = {
+        title: formData.title,
+        content: formData.description,
+        locationId: formData.locationId,
+        image: formData.images,
+        visitNowLink: formData.url,
+      };
+      try {
+        const response = await submitBlogs(updatedForm);
+        console.log(response);
+        window.location.reload();
+      } catch (error) {
+        console.log("Error Occurred", error);
+      }
     }
   };
 
@@ -184,16 +220,15 @@ function Blogs() {
     window.location.reload();
   };
 
+  //for Logging Out
   const handleLogout = () => {
-    console.log("Log Out Done!");
     localStorage.removeItem("loginTime"); // clear localStorage
     navigate("/"); // redirect to login page
   };
 
   const handleBlogDelete = async (id) => {
     try {
-      const response = await deleteBlogs(id);
-      console.log(response);
+      await deleteBlogs(id);
       window.location.reload();
     } catch (error) {
       console.log("error is here", error);
@@ -205,6 +240,31 @@ function Blogs() {
     return htmlContent
       .replace(/<p><br\s*\/?><\/p>/g, "")
       .replace(/<p>&nbsp;<\/p>/g, "");
+  };
+
+  // handleing Blogs Edit Section
+
+  const handleBlogLike = async (id) => {
+    try {
+      const response = await getBlogsForEdit(id); // Ensure that this returns the correct response structure
+      if (response) {
+        setIsImgExist(response.imgUrl);
+        setFormData((prevState) => ({
+          ...prevState, // Spread the previous form data to retain existing values
+          title: response.title || "", // Provide fallback values in case of undefined data
+          description: response.content || "",
+          locationName: response.locationName || "",
+          images: response.imageUrl || [],
+          url: response.visitNowLink || "",
+          blogId: response.id || "",
+          isEdit: true,
+        }));
+      } else {
+        console.log("Invalid response data");
+      }
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
   };
 
   return (
@@ -277,28 +337,46 @@ function Blogs() {
               >
                 {/* Image Upload */}
                 <label
-                  className="h-[fit] basis-[30%] flex flex-col justify-center items-center rounded-2xl shadow-md cursor-pointer"
+                  className={`basis-[30%] flex flex-col 
+                  justify-center items-center ${
+                    formData.isEdit ? "h-[300px]" : "h-[fit]"
+                  }
+                  rounded-2xl shadow-md cursor-pointer`}
                   htmlFor="image"
                 >
                   {isImgExist ? (
-                    <div className="relative">
-                      <img
-                        className="w-[100%] h-[100%] rounded-xl"
-                        src={isImgExist}
-                        alt="Selected"
-                      />
-                      <div
-                        className="absolute top-[-5px] right-[-10px] flex items-center 
+                    <>
+                      <div className="relative">
+                        <img
+                          className="h-[100%] 
+                          rounded-xl"
+                          src={isImgExist}
+                          alt="Selected"
+                        />
+                        <div
+                          className="absolute top-[-5px] right-[-10px] flex items-center 
                         px-2 bg-red-700 text-white cursor-pointer rounded-full"
-                        onClick={handleImageRemove}
-                      >
-                        X
+                          onClick={handleImageRemove}
+                        >
+                          X
+                        </div>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <>
-                      <FaImage className="text-5xl" />
-                      <h2 className="text-xl mt-4">Add Image</h2>
+                      {formData.images.length > 0 ? (
+                        <img
+                          className="w-[auto] h-[100%] rounded-xl py-2"
+                          src={formData.images}
+                          alt="Selected"
+                        />
+                      ) : (
+                        <>
+                          <FaImage className="text-5xl" />
+                          <h2 className="text-xl mt-4">Add Image</h2>
+                        </>
+                      )}
+
                       <p className="text-red-500">{error}</p>
                       <input
                         type="file"
@@ -307,13 +385,17 @@ function Blogs() {
                         accept=".jpg, .png, .jpeg"
                         onChange={handleChange}
                         hidden
+                        disabled={formData.isEdit} //Disabled during Edit
                       />
                     </>
                   )}
                 </label>
 
                 {/* Text Fields */}
-                <div className="h-[fit] basis-[70%] flex-grow-2 flex flex-col justify-center items-center rounded-2xl px-3 py-2">
+                <div
+                  className="h-[fit] basis-[70%] flex-grow-2 flex flex-col 
+                justify-center items-center rounded-2xl px-3 py-2"
+                >
                   <input
                     className="w-[100%] h-[30%] ps-3 focus:outline-none focus:font-bold"
                     type="text"
@@ -351,13 +433,21 @@ function Blogs() {
                       onChange={handleChange}
                       value={formData.locationId}
                       required
-                      disabled={formData.locationList.length === 0}
+                      disabled={
+                        formData.locationList.length === 0 || formData.isEdit
+                      }
                     >
-                      <option value="" disabled>
-                        {formData.locationList.length === 0
-                          ? "Loading locations..."
-                          : "Select a location"}
-                      </option>
+                      {formData.isEdit ? (
+                        <option value="" disabled>
+                          {formData.locationName}
+                        </option>
+                      ) : (
+                        <option value="" disabled>
+                          {formData.locationList.length === 0
+                            ? "Loading locations..."
+                            : "Select a location"}
+                        </option>
+                      )}
                       {formData?.locationList?.map((location) => {
                         return (
                           <option key={location.id} value={location.id}>
@@ -395,11 +485,11 @@ function Blogs() {
                 </div>
               </form>
 
-              <div className="flex flex-col gap-1 mt-4 h-[60vh] w-[100%] px-3">
+              <div className="flex flex-col gap-1 mt-4 h-[50vh] w-[100%] px-3">
                 {/* Blog List (Placeholder) */}
                 <div
                   className="flex flex-col flex-nowrap items-center py-2
-                gap-4 h-fit overflow-scroll w-[100%] mt-4 bg-transparent"
+                gap-2 h-fit overflow-scroll w-[100%] mt-4 bg-transparent pb-12"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {formData.bloglist ? (
@@ -407,7 +497,7 @@ function Blogs() {
                       {currentBlogs.map((blog) => (
                         <div
                           key={blog.id}
-                          className="min-h-[30vh] w-[100%] shadow-md 
+                          className="min-h-[20vh] w-[100%] shadow-md 
                             rounded-2xl flex flex-row py-4 px-4"
                         >
                           <div className="basis-[30%] w-[100%] flex flex-col justify-center items-center">
@@ -420,8 +510,8 @@ function Blogs() {
                             </div>
                           </div>
                           <div
-                            className="basis-[70%] w-[100%] flex flex-col gap-4 
-                          justify-start items-start relative"
+                            className="basis-[70%] w-[100%] flex flex-col gap-1
+                            justify-start items-start relative"
                           >
                             <h2
                               className="text-[1rem] font-bold
@@ -451,13 +541,45 @@ function Blogs() {
                               >
                                 {blog.visitNowLink}
                               </a>
-                              <button
-                                onClick={() => handleBlogDelete(blog.id)}
-                                className="mt-3 px-2 py-2 rounded-full bg-red-600
-                              text-white shadow-xl hover:scale-125"
-                              >
-                                <ImBin className="text-sm" />
-                              </button>
+
+                              <div className="flex gap-2 w-[fit-content]">
+                                <button
+                                  className={`${MyBlogs.Icons}`}
+                                  onClick={() => handleBlogLike(blog.id)}
+                                >
+                                  <svg
+                                    className="svg-icon"
+                                    fill="none"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    width="24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <g
+                                      stroke="#a649da"
+                                      strokeLinecap="round"
+                                      strokeWidth="2"
+                                    >
+                                      <path d="m20 20h-16"></path>
+                                      <path
+                                        clipRule="evenodd"
+                                        d="m14.5858 4.41422c.781-.78105 2.0474-.78105 2.8284 0 .7811.78105.7811 2.04738 0 2.82843l-8.28322 8.28325-3.03046.202.20203-3.0304z"
+                                        fillRule="evenodd"
+                                      ></path>
+                                    </g>
+                                  </svg>
+                                  <span className={`${MyBlogs.label}`}>
+                                    Edit
+                                  </span>
+                                </button>
+                                <button
+                                  onClick={() => handleBlogDelete(blog.id)}
+                                  className=" mt-5 px-2 py-2 rounded-full bg-red-600
+                                text-white shadow-xl hover:scale-125"
+                                >
+                                  <ImBin classNameName="text-sm" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -476,7 +598,11 @@ function Blogs() {
                 </div>
 
                 {/* Pagination */}
-                <div className="container h-[fit-content] flex flex-wrap items-center justify-center gap-1 my-3">
+                <div
+                  className="container h-[fit-content] flex 
+                flex-wrap items-center fixed bottom-0 right-0 py-3
+                justify-center gap-1 my-3 bg-white w-[100%]"
+                >
                   <ul className="list-none flex space-x-2">
                     {currentPage === 1 ? (
                       ""
@@ -490,7 +616,7 @@ function Blogs() {
                       </li>
                     )}
                     <li
-                      className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] font-bold
+                      className={`px-[20px] py-[10px] cursor-pointer border border-[#ddd] font-bold
                       active:bg-[#007bff] active:text-white hover:bg-[#f0f0f0] rounded-lg`}
                     >
                       {currentPage}
@@ -503,10 +629,48 @@ function Blogs() {
                         text-white hover:bg-[#f0f0f0] hover:text-black rounded-lg`}
                         onClick={() => setCurrentPage(currentPage + 1)}
                       >
-                        next
+                        Next
                       </li>
                     )}
+                    <li
+                      className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] text-bold bg-[#007bff]
+                      text-white hover:bg-[#f0f0f0] hover:text-black rounded-lg font-extrabold`}
+                      onClick={() => setCurrentPage(totalPages)}
+                    >
+                      {totalPages}
+                    </li>
+                    <li
+                      className={`px-[10px] py-[10px] cursor-pointer border border-[#ddd] text-bold bg-[#007bff]
+                      text-white hover:bg-[#f0f0f0] hover:text-black rounded-lg font-extrabold`}
+                      onClick={() => setCurrentPage(1)}
+                    >
+                      001
+                    </li>
                   </ul>
+
+                  {/* Fitlering Locations Posts */}
+                  <select
+                    className="py-1 px-8 rounded-lg border-gray-500
+                    border-spacing-1 border-[2px] ms-7"
+                    name="locationId"
+                    id="locationId"
+                    onChange={handleFilter}
+                    required
+                    disabled={formData.locationList.length === 0}
+                  >
+                    <option value="" className="font-extrabold">
+                      {formData.locationList.length === 0
+                        ? "Loading locations..."
+                        : "All Locations"}
+                    </option>
+                    {formData?.locationList?.map((location) => {
+                      return (
+                        <option key={location.id} value={location.name}>
+                          {location.name}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
               </div>
             </>
