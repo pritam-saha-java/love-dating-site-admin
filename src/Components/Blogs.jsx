@@ -121,7 +121,7 @@ function Blogs() {
 
     if (name === "title") {
       console.log(value.split(" ").length);
-      if (value.split(" ").length > 500) {
+      if (value.split(" ").length > 2000) {
         return setTitleError("Title should not exceed 1000 characters");
       } else {
         setTitleError("");
@@ -129,7 +129,7 @@ function Blogs() {
     }
 
     if (name === "description") {
-      if (value.split(" ").length > 200) {
+      if (value.split(" ").length > 500) {
         return setDescriptionError(
           "Description should not exceed 200 characters"
         );
