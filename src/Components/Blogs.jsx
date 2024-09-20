@@ -14,7 +14,8 @@ import {
   getBlogsForEdit,
   updateBlogs,
 } from "../Services/Services";
-
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Logo from "../../public/KolkatEscort24.png";
 
 function Blogs() {
@@ -22,8 +23,6 @@ function Blogs() {
   const [isBlogsOpen, setIsBlogsOpen] = useState(true);
   const [isImgExist, setIsImgExist] = useState(null);
   const [error, setError] = useState("");
-  const [titleError, setTitleError] = useState("");
-  const [descriptionError, setDescriptionError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [formData, setFormData] = useState({
@@ -118,24 +117,6 @@ function Blogs() {
   // Handling form data changes
   const handleChange = (e) => {
     const { value, name, files } = e.target;
-
-    if (name === "title") {
-      if (value.split(" ").length > 5000) {
-        return setTitleError("Title should not exceed 5000 characters");
-      } else {
-        setTitleError("");
-      }
-    }
-
-    if (name === "description") {
-      if (value.split(" ").length > 10000) {
-        return setDescriptionError(
-          "Description should not exceed 10000 characters"
-        );
-      } else {
-        setDescriptionError("");
-      }
-    }
 
     if (name === "images") {
       if (files.length > 0) {
@@ -242,10 +223,10 @@ function Blogs() {
   };
 
   // handleing Blogs Edit Section
-
   const handleBlogLike = async (id) => {
     try {
       const response = await getBlogsForEdit(id); // Ensure that this returns the correct response structure
+      console.log(response);
       if (response) {
         setIsImgExist(response.imgUrl);
         setFormData((prevState) => ({
@@ -331,7 +312,7 @@ function Blogs() {
             <>
               {/* Form */}
               <form
-                className="h-[fit] w-[100%] shadow-2xl rounded-2xl flex flex-row py-4 px-4"
+                className="h-[fit-content] w-[100%] shadow-2xl rounded-2xl flex flex-row py-4 px-4"
                 onSubmit={handleSubmit}
               >
                 {/* Image Upload */}
@@ -392,38 +373,40 @@ function Blogs() {
 
                 {/* Text Fields */}
                 <div
-                  className="h-[fit] basis-[70%] flex-grow-2 flex flex-col 
+                  className="h-[fit-content] basis-[70%] flex-grow-2 flex flex-col 
                 justify-center items-center rounded-2xl px-3 py-2"
                 >
-                  <input
-                    className="w-[100%] h-[30%] ps-3 focus:outline-none focus:font-bold"
-                    type="text"
-                    name="title"
-                    id="title"
-                    placeholder={
-                      titleError ? "Error: " + titleError : "Add title Here..."
-                    }
-                    onChange={handleChange}
+                  <ReactQuill
+                    className="w-[100%] h-[30%] ps-3 
+                    focus:outline-none focus:font-bold"
+                    theme="snow"
                     value={formData.title}
-                    required
-                  />
-                  <textarea
-                    className="w-[100%] h-[60%] ps-3 py-3 text-sm focus:outline-none focus:font-medium"
-                    name="description"
-                    id="description"
-                    rows={8}
-                    placeholder={
-                      descriptionError
-                        ? "Error: " + descriptionError
-                        : "Add Content here..."
+                    onChange={(content) =>
+                      handleChange({
+                        target: { name: "title", value: content },
+                      })
                     }
-                    onChange={handleChange}
+                    placeholder="Add title here..."
+                  />
+                  <br />
+                  <ReactQuill
+                    className="w-[100%] h-[30%] ps-3 rounded-xl
+                    focus:outline-none focus:font-bold"
+                    theme="snow"
                     value={formData.description}
-                    required
-                  ></textarea>
-
+                    onChange={(content) =>
+                      handleChange({
+                        target: { name: "description", value: content },
+                      })
+                    }
+                    placeholder="Add description here..."
+                  />
+                  <br />
                   {/* Additional Fields */}
-                  <div className="w-[100%] h-[20%] flex flex-row justify-between items-center gap-2">
+                  <div
+                    className="w-[100%] h-[20%] flex flex-row
+                  justify-between items-center gap-2"
+                  >
                     {/* Location Selection Tags */}
                     <select
                       className="py-1 px-4 rounded-full border border-spacing-1"

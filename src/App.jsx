@@ -8,6 +8,8 @@ import { Suspense, lazy } from "react";
 import ScrollToTop from "./components/ScrollToTop";
 const Blogs = lazy(() => import("./Components/Blogs"));
 const LogIn = lazy(() => import("./components/LogIn"));
+// const SlateEditor = lazy(() => import("./Components/Preview"))
+import Preview from "./Components/Preview";
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LogIn />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="preview" element={<Preview />} />
         </Routes>
       </Suspense>
     </Router>
