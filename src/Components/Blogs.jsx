@@ -24,6 +24,7 @@ function Blogs() {
   const [isImgExist, setIsImgExist] = useState(null);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [titleError, setTitleError] = useState("");
   const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [formData, setFormData] = useState({
     blogId: "",
@@ -376,18 +377,19 @@ function Blogs() {
                   className="h-[fit-content] basis-[70%] flex-grow-2 flex flex-col 
                 justify-center items-center rounded-2xl px-3 py-2"
                 >
-                  <ReactQuill
-                    className="w-[100%] h-[30%] ps-3 
-                    focus:outline-none focus:font-bold"
-                    theme="snow"
-                    value={formData.title}
-                    onChange={(content) =>
-                      handleChange({
-                        target: { name: "title", value: content },
-                      })
+                  <input
+                    className="w-[100%] h-[30%] ps-3 focus:outline-none focus:font-bold"
+                    type="text"
+                    name="title"
+                    id="title"
+                    placeholder={
+                      titleError ? "Error: " + titleError : "Add title Here..."
                     }
-                    placeholder="Add title here..."
+                    onChange={handleChange}
+                    value={formData.title}
+                    required
                   />
+                  
                   <br />
                   <ReactQuill
                     className="w-[100%] h-[30%] ps-3 rounded-xl
