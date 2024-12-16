@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllQrCodes, createQrCode, deleteQrCode, setActiveQrCode } from '../Services/QrCodesService';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
 
 const QRCodeManagement = () => {
   const [qrCodes, setQrCodes] = useState([]);
@@ -63,6 +64,17 @@ const QRCodeManagement = () => {
   };
 
   return (
+        <>
+              <nav className="navbar">
+  <ul>
+    <li>
+      <a href="/user-management" target="_blank" rel="noopener noreferrer">User Management</a>
+    </li>
+    <li>
+      <a href="/qr-code-management" target="_blank" rel="noopener noreferrer">QR Code Management</a>
+    </li>
+  </ul>
+</nav>
     <div className="d-flex">
       <div className="container mt-5">
         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -125,6 +137,7 @@ const QRCodeManagement = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

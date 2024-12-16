@@ -24,28 +24,11 @@ function AppContent() {
   const isLoginPage = location.pathname === "/";
 
   return (
-    <div>
-      {/* Render the navbar only if not on the login page */}
-      {!isLoginPage && (
-        <nav className="navbar">
-          <ul>
-            <li>
-              <Link to="/user-management">User Management</Link>
-            </li>
-            <li>
-              <Link to="/qr-code-management">QR Code Management</Link>
-            </li>
-          </ul>
-        </nav>
-      )}
-      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<LogIn />} />
           <Route path="/user-management" element={<UserManagement />} />
           <Route path="/qr-code-management" element={<QRCodeManagement />} />
         </Routes>
-      </Suspense>
-    </div>
   );
 }
 

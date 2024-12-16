@@ -5,6 +5,7 @@ import {
   updateUser,
   deleteUser,
 } from "../Services/UserService";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const UserManagement = () => {
@@ -73,6 +74,17 @@ const UserManagement = () => {
   };
 
   return (
+    <>
+<nav className="navbar">
+  <ul>
+    <li>
+      <a href="/user-management" target="_blank" rel="noopener noreferrer">User Management</a>
+    </li>
+    <li>
+      <a href="/qr-code-management" target="_blank" rel="noopener noreferrer">QR Code Management</a>
+    </li>
+  </ul>
+</nav>
     <div className="container mt-5">
       <h2 className="text-center mb-4">User Management</h2>
       <div className="card mb-4">
@@ -188,6 +200,7 @@ const UserManagement = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
