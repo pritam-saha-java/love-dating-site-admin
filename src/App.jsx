@@ -3,26 +3,49 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Link,
+  useLocation,
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import ScrollToTop from "./components/ScrollToTop";
-const Blogs = lazy(() => import("./Components/Blogs"));
 const LogIn = lazy(() => import("./components/LogIn"));
-// const SlateEditor = lazy(() => import("./Components/Preview"))
-import Preview from "./Components/Preview";
+const UserManagement = lazy(() => import("./components/UserManagement"));
+const QRCodeManagement = lazy(() => import("./components/QRCodeManagement"));
 
 function App() {
   return (
     <Router>
-      <ScrollToTop />
-      <Suspense>
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/";
+
+  return (
+    <div>
+      {/* Render the navbar only if not on the login page */}
+      {!isLoginPage && (
+        <nav className="navbar">
+          <ul>
+            <li>
+              <Link to="/user-management">User Management</Link>
+            </li>
+            <li>
+              <Link to="/qr-code-management">QR Code Management</Link>
+            </li>
+          </ul>
+        </nav>
+      )}
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
           <Route path="/" element={<LogIn />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="preview" element={<Preview />} />
+          <Route path="/user-management" element={<UserManagement />} />
+          <Route path="/qr-code-management" element={<QRCodeManagement />} />
         </Routes>
       </Suspense>
-    </Router>
+    </div>
   );
 }
 

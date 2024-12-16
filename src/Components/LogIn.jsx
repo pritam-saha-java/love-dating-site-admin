@@ -1,8 +1,7 @@
 import { useState } from "react";
-// import { login } from "../Services/Register";
 import "../Styles/MyApp.css";
 import { useNavigate } from "react-router-dom";
-import {login} from "../Services/Services"
+import { login } from "../Services/UserService";
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -17,12 +16,11 @@ const AdminLogin = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value)
+    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
     });
-    formData.email;
   };
 
   const togglePasswordVisibility = () => {
@@ -31,22 +29,18 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, value } = e.target;
-    console.log(name, value);
-    // navigate("/blogs")
     try {
       const response = await login(formData);
       console.log("Login Successful:", response);
       setSuccess("Login Successful!");
-      
+
       setTimeout(() => {
-        navigate("/blogs");
+        navigate("/user-management");
       }, 1000);
     } catch (error) {
       console.error("Error during Login:", error);
-      // Check if the error response contains a 'detail' or 'description' field
       const errorMessage =
-        error.response?.data?.detail ||
+        error.response?.data?.message ||
         error.response?.data?.description ||
         "Failed to Login. Please check your credentials.";
       setError(errorMessage);
@@ -57,16 +51,16 @@ const AdminLogin = () => {
   };
 
   return (
-    <section className="h-[100vh] gradient-custom flex justify-center items-center">
+    <section className="h-[100vh] bg-gradient-to-r from-yellow-400 via-red-500 to-orange-600 flex justify-center items-center">
       <div className="flex justify-center items-center flex-col">
         <div
-          className="shadow-2xl rounded-xl flex flex-col bg-gray-900 text-white
-         justify-center items-center p-5 text-center h-[600px] w-[500px] gap-5"
+          className="shadow-lg rounded-3xl flex flex-col bg-white bg-opacity-80 p-8 text-center h-[600px] w-[500px] gap-5"
         >
-          <h2 className="font-bold text-4xl">
-            Welcome To Kolkata Escort 24 Admin Panel !
+          <h2 className="font-bold text-3xl text-gray-900 mb-4">
+            Welcome To Love Dating Site Admin Panel
           </h2>
-          <p className="mb-5 text-xl">Please Enter Your Admin Credentials !</p>
+          <p className="text-lg text-gray-600 mb-6">Please Enter Your Admin Credentials</p>
+          
           {error && (
             <div className="text-red-600 mt-4" role="alert">
               {error}
@@ -77,34 +71,34 @@ const AdminLogin = () => {
               {success}
             </div>
           )}
+          
           <form
             onSubmit={handleSubmit}
-            className="w-[100%] flex flex-col justify-center items-center gap-3"
+            className="w-full flex flex-col justify-center items-center gap-5"
           >
             <input
               type="text"
               id="typeEmailX"
-              className="focus:outline-none w-[70%] 
-              text-black font-semibold py-2 px-2 rounded-2xl"
+              className="focus:outline-none w-[80%] py-2 px-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 transition duration-300"
               name="text"
               value={formData.text}
               onChange={handleChange}
-              placeholder="Enter text Here"
+              placeholder="Enter Username"
               required
             />
             <input
               type={showPassword ? "text" : "password"}
               id="typePasswordX"
-              className="focus:outline-none w-[70%] 
-              text-black font-semibold py-2 px-2 rounded-2xl"
+              className="focus:outline-none w-[80%] py-2 px-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-400 transition duration-300"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter Password"
               required
             />
+            
             <button
-              className="btn btn-outline-light btn-lg"
+              className="text-gray-700 mt-2 hover:text-orange-500 transition duration-300"
               type="button"
               onClick={togglePasswordVisibility}
             >
@@ -114,8 +108,9 @@ const AdminLogin = () => {
                 <i className="fa-solid fa-eye"></i>
               )}
             </button>
+
             <button
-              className="font-bold py-2 px-8 border-[2px] rounded-xl text-xl"
+              className="bg-orange-500 text-white py-2 px-8 rounded-full font-bold hover:bg-orange-600 transition duration-300"
               type="submit"
             >
               Login
